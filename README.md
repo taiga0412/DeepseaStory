@@ -62,4 +62,6 @@ git fetch origin pull/issue番号/head:ブランチ名
 でPRの環境をローカルで持ってくることができる.git switch で移動して動作確認するとなお、良し
 マージしたら、"マージした"とslackで報告してくれるとありがたい.
 
+issueを解決したら必ずissue closeする.
+
 1 ~ 5　を繰り返す

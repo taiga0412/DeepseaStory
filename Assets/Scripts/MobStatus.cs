@@ -22,8 +22,14 @@ public class MobStatus : MonoBehaviour
     //‚µ‚á‚ª‚İ‰Â”\‚©‚ğ•Ô‚·
     public bool IsSyagamiable => _state == StateEnum.Normal;
 
+    //‚µ‚á‚ª‚İ’†‚©‚ğ•Ô‚·
+    public bool IsSyagaming => _state == StateEnum.Syagami;
+
     //UŒ‚‰Â”\‚©‚ğ•Ô‚·
     public bool IsAttackable => _state == StateEnum.Normal;
+
+    //UŒ‚’†‚©‚ğ•Ô‚·
+    public bool IsAttacking => _state == StateEnum.Attack || _state == StateEnum.FallAttack;
 
 
     //TODOFHPŠÇ—‚Ì’Ç‰Á
@@ -45,7 +51,7 @@ public class MobStatus : MonoBehaviour
     //‰Â”\‚È‚ç’Êíó‘Ô‚Ö‘JˆÚ‚·‚é
     public void GoToNormalStateIfPossible()
     {
-        if (!IsMovable) return;
+        if (_state == StateEnum.Die) return;
 
         _state = StateEnum.Normal;
         _animator.SetBool("syagami", false);

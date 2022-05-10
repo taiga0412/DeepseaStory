@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+//旧Component。削除推奨。
 public class Player : MonoBehaviour
 {
     #region//インスペクターで設定する

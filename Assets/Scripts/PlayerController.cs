@@ -2,8 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+//プレイヤー操作を管理するComponent
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(MobStatus))]
+[RequireComponent (typeof(MobAttack))]
 public class PlayerController : MonoBehaviour
 {
     #region//インスペクターで設定する
@@ -18,14 +20,18 @@ public class PlayerController : MonoBehaviour
     public AnimationCurve jumpCurve;
     #endregion
 
+    [SerializeField] private Animator animator;
+
     private Rigidbody2D _rb;
     private MobStatus _status;
-    private Vector2 _moveVelocity;
+    private MobAttack _attack;
+    private Vector2 _moveVelocity;  //プレイヤーの移動速度情報
 
     // Start is called before the first frame update
     void Start()
     {
         _status = GetComponent<MobStatus>();
+        _attack = GetComponent<MobAttack>();
         _rb = GetComponent<Rigidbody2D>();
         
     }
@@ -44,19 +50,32 @@ public class PlayerController : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.C))
         {
-            //TODO：通常攻撃処理
+            //通常攻撃処理
+            _attack.AttackIfPossible();
         }
         else if (Input.GetKeyDown(KeyCode.X))
         {
-            //TODO：落下攻撃処理
+            //落下攻撃処理
+            _attack.FallAttackIfPossible();
         }
 
-        //Y軸の処理
+        //Y軸速度の処理
         if (ground.IsGround())  //TODO：IsGround()を変数へ
         {
             //TODO：ジャンプ処理
+            //TODO：しゃがみ処理
+            _moveVelocity.y = 0;
+        }
+        else
+        {
+            //TODO：落下処理
+            _moveVelocity.y -= 9;
         }
 
+
+        //TODO：Animatorに移動速度情報から得られるパラメータを適用する
+
+        //移動速度を適用する
         _rb.velocity = _moveVelocity;
     }
 }

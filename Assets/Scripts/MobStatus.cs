@@ -35,7 +35,7 @@ public class MobStatus : MonoBehaviour
     //TODOFHPŠÇ—‚Ì’Ç‰Á
 
 
-    private StateEnum _state;
+    private StateEnum _state;   //Œ»İ‚Ìó‘Ô
     protected Animator _animator;
 
 

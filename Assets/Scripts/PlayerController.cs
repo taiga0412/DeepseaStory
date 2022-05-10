@@ -9,15 +9,15 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     #region//インスペクターで設定する
-    public float speed;
-    public float jumpHeight;    //最大ジャンプ高度
-    public float gravity;
-    public float jumpSpeed;
-    public float jumpLimitTime; //ジャンプ上昇の時間制限
+    public float speed;         //移動速度
+    public float jumpHeight;    //最大ジャンプ高度（過ぎると自動で落下開始）
+    public float gravity;       //重力加速度（というより落下速度？）
+    public float jumpSpeed;     //ジャンプ時の上昇速度
+    public float jumpLimitTime; //ジャンプ上昇の時間制限（過ぎると自動で落下開始）
     public GroundCheck ground;
     public GroundCheck head;
-    public AnimationCurve dashCurve;
-    public AnimationCurve jumpCurve;
+    public AnimationCurve dashCurve;    //ダッシュ速度曲線
+    public AnimationCurve jumpCurve;    //ジャンプ速度曲線
     #endregion
 
     [SerializeField] private Animator animator;
@@ -47,20 +47,22 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //移動キー入力取得
         float horizontalKey = Input.GetAxis("Horizontal");
         float verticalKey = Input.GetAxis("Vertical");
-        bool isGround = ground.IsGround();  //TODO：isGroundの扱いの見直し
-        bool isHead = head.IsGround();      //TODO：isHeadの扱いの見直し
+        //地面との接触判定の取得
+        bool isGround = ground.IsGround();
+        bool isHead = head.IsGround();
 
         //攻撃処理
         if (Input.GetKeyDown(KeyCode.C))
         {
-            //通常攻撃処理
+            //通常攻撃処理へ
             _attack.AttackIfPossible();
         }
         else if (Input.GetKeyDown(KeyCode.X) && !isGround)
         {
-            //落下攻撃処理
+            //落下攻撃処理へ
             _attack.FallAttackIfPossible();
         }
         else if (_status.IsAttacking && animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f)
@@ -89,9 +91,9 @@ public class PlayerController : MonoBehaviour
             _moveVelocity.y = 0;
 
             //しゃがみ解除処理
-            if (_status.IsSyagaming)
+            if (_status.IsSyagaming && verticalKey >= 0)
             {
-                if(verticalKey >= 0) _status.GoToNormalStateIfPossible();
+                _status.GoToNormalStateIfPossible();
             }
 
             //ジャンプ・しゃがみ状態への遷移
@@ -124,7 +126,7 @@ public class PlayerController : MonoBehaviour
                 bool canTime = jumpLimitTime > jumpTime;
                 if (!pushUpKey || !canHeight || !canTime || isHead)
                 {
-                    //キー入力・限界高度・入力時間・天井のいずれかの条件により落下へと移行する
+                    //キー入力・限界高度・入力時間・天井衝突のいずれかの条件により落下へと移行する
                     IsJumping = false;
                 }
             }
@@ -139,7 +141,7 @@ public class PlayerController : MonoBehaviour
         _rb.velocity = _moveVelocity;
     }
 
-    //Animatorのパラメータを設定する
+    //Animatorのパラメータを設定する（速度など、物理関係の情報のみ）
     private void SetAnimatorParams(Vector2 velocity, bool isGround)
     {
         //接地と速度情報をAnimatorに伝える

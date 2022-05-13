@@ -48,8 +48,8 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         //ˆÚ“®ƒL[“ü—Íæ“¾
-        float horizontalKey = Input.GetAxis("Horizontal");
-        float verticalKey = Input.GetAxis("Vertical");
+        float horizontalKey = Input.GetAxisRaw("Horizontal");
+        float verticalKey = Input.GetAxisRaw("Vertical");
         //’n–Ê‚Æ‚ÌÚG”»’è‚Ìæ“¾
         bool isGround = ground.IsGround();
         bool isHead = head.IsGround();

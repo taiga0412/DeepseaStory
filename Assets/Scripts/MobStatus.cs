@@ -13,6 +13,7 @@ public class MobStatus : MonoBehaviour
         Attack,     //’ÊíUŒ‚’†
         FallAttack, //—‰ºUŒ‚’†
         Syagami,    //‚µ‚á‚ª‚İó‘Ô
+        Damaged,    //”í’eó‘Ôi–³“Gj
         Die         //€–S
     }
 
@@ -31,11 +32,22 @@ public class MobStatus : MonoBehaviour
     //UŒ‚’†‚©‚ğ•Ô‚·
     public bool IsAttacking => _state == StateEnum.Attack || _state == StateEnum.FallAttack;
 
+    //”í’ed’¼’†‚©‚ğ•Ô‚·
+    public bool IsDamaged => _state == StateEnum.Damaged;
 
-    //TODOFHPŠÇ—‚Ì’Ç‰Á
+    [SerializeField] private float _HPMax = 1.0f;
+    public float HPMax => _HPMax;   //HP‚ÌÅ‘å’l
+    public float HP { get; private set; }   //Œ»İ‚ÌHP
+    [SerializeField] private float FrozenTime;  //”í’eŒã‚Ìd’¼ŠÔ
+    [SerializeField] private float DamagedMutekiTime;   //”í’e‚©‚ç•œ‹A‚µ‚½Œã‚Ì–³“GŠÔ
+    public bool IsMuteki { get; private set; }  //–³“G‚©‚Ç‚¤‚©‚Ìƒtƒ‰ƒO
 
+
+
+    private const float FlickDuration = 0.2f;   //“_–ÅŠÔŠu
 
     private StateEnum _state;   //Œ»İ‚Ìó‘Ô
+    private SpriteRenderer _spriteRenderer;
     protected Animator _animator;
 
 
@@ -45,7 +57,9 @@ public class MobStatus : MonoBehaviour
     {
         _state = StateEnum.Normal;
         _animator = GetComponent<Animator>();
-        
+        _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+
+        HP = HPMax;
     }
 
     //‰Â”\‚È‚ç’Êíó‘Ô‚Ö‘JˆÚ‚·‚é
@@ -84,4 +98,79 @@ public class MobStatus : MonoBehaviour
         _animator.SetTrigger("fallattack");
     }
 
+
+    //‰Â”\‚È‚ç”í’eó‘Ô‚Ö‘JˆÚ‚·‚é
+    public void GoToDamagedStateIfPossible()
+    {
+        if (_state == StateEnum.Die) return;
+
+        _state = StateEnum.Damaged;
+        _animator.SetBool("damage", true);
+        IsMuteki = true;
+        StartCoroutine(Flicker());
+        StartCoroutine(EndDamagedTime());
+    }
+
+    //ƒ_ƒ[ƒW‚ğó‚¯‚éˆ—
+    public void Damage(float n = 1)
+    {
+        if (_state == StateEnum.Die || IsMuteki) return;
+
+        //HP‚ğŒ¸‚ç‚·
+        HP -= n;
+
+        //¶‘¶”»’è
+        if (HP > 0)
+        {
+            //”í’eó‘Ô‚Ö‘JˆÚ‚·‚é
+            GoToDamagedStateIfPossible();
+            return;
+        }
+        //€–S‚µ‚Ä‚¢‚é‚Æ‚«‚Ìˆ—
+        OnDie();
+    }
+
+    //€–S‚µ‚½Û‚Ìˆ—
+    public void OnDie()
+    {
+        _animator.SetTrigger("die");
+        _state = StateEnum.Die;
+    }
+
+    //ƒ_ƒ[ƒWd’¼‚ÌI—¹
+    public IEnumerator EndDamagedTime()
+    {
+        //d’¼ŠÔ•ª‘Ò‹@‚·‚é
+        yield return new WaitForSeconds(FrozenTime);
+        //‰Â”\‚È‚ç’Êíó‘Ô‚É‘JˆÚ‚·‚é
+        _animator.SetBool("damage", false);
+        GoToNormalStateIfPossible();
+        //‚³‚ç‚É–³“GŠÔ•ª‘Ò‹@‚·‚é
+        yield return new WaitForSeconds(DamagedMutekiTime);
+        //–³“GŠÔ‚ğI‚í‚ç‚¹‚é
+        IsMuteki = false;
+    }
+
+    //–³“GŠÔ’†‚ÍƒXƒvƒ‰ƒCƒg‚ğ“_–Å‚³‚¹‚é
+    private IEnumerator Flicker()
+    {
+        //Šî–{F
+        Color baseColor = new Color(255, 255, 255, 255);
+        while (true)
+        {
+            //“§–¾“x‚ğŒvZ‚·‚é
+            float alpha_Sin = Mathf.Round(Time.time % FlickDuration / FlickDuration);
+            //“§–¾“x‚ğİ’è‚·‚é
+            baseColor.a = alpha_Sin;
+            _spriteRenderer.color = baseColor;
+
+            if (!IsMuteki)
+            {
+                baseColor.a = 255;
+                _spriteRenderer.color = baseColor;
+                yield break;
+            }
+            yield return null;
+        }
+    }
 }

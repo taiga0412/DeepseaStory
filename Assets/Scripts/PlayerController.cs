@@ -14,6 +14,8 @@ public class PlayerController : MonoBehaviour
     public float gravity;       //重力加速度（というより落下速度？）
     public float jumpSpeed;     //ジャンプ時の上昇速度
     public float jumpLimitTime; //ジャンプ上昇の時間制限（過ぎると自動で落下開始）
+    public float damagedAnimSpeed;  //被弾時の横移動速度
+    public float damagedAnimTime;   //被弾時の横移動時間
     public GroundCheck ground;
     public GroundCheck head;
     public AnimationCurve dashCurve;    //ダッシュ速度曲線
@@ -28,6 +30,7 @@ public class PlayerController : MonoBehaviour
     private float beforeKey = 0.0f; //前フレームの横方向入力量
     private float jumpTime = 0.0f;  //上方向の入力時間
     private float jumpPos = 0.0f;   //ジャンプ開始した際のy座標
+    private float damagedPassedTime = 0.0f;   //被弾してからの経過時間
 
 
     private Rigidbody2D _rb;
@@ -54,6 +57,12 @@ public class PlayerController : MonoBehaviour
         bool isGround = ground.IsGround();
         bool isHead = head.IsGround();
 
+        //デバッグ用。ボタンを押すとダメージを受ける
+        if (Input.GetKeyDown(KeyCode.Z))
+        {
+            _status.Damage();
+        }
+
         //攻撃処理
         if (Input.GetKeyDown(KeyCode.C))
         {
@@ -67,15 +76,28 @@ public class PlayerController : MonoBehaviour
         }
 
         //X軸速度の処理
-        if (_status.IsMovable)
+        if (_status.IsDamaged)
         {
-            //横入力に応じてX軸速度の計算
-            _moveVelocity.x = CalcXSpeed(horizontalKey);
+            //プレイヤーの向きを取得する
+            float playerDirection = transform.localScale.x;
+
+            //被弾した直後は横に移動する
+            damagedPassedTime += Time.deltaTime;
+            if (damagedPassedTime <= damagedAnimTime) _moveVelocity.x = damagedAnimSpeed * playerDirection;
+            else _moveVelocity.x = 0;
         }
-        else
-        {
-            //移動不可の場合はx軸速度を0にする
-            _moveVelocity.x = 0;
+        else {
+            damagedPassedTime = 0;
+            if (_status.IsMovable)
+            {
+                //横入力に応じてX軸速度の計算
+                _moveVelocity.x = CalcXSpeed(horizontalKey);
+            }
+            else
+            {
+                //移動不可の場合はx軸速度を0にする
+                _moveVelocity.x = 0;
+            }
         }
 
         //Y軸速度の処理

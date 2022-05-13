@@ -55,7 +55,6 @@ public class MobStatus : MonoBehaviour
 
         _state = StateEnum.Normal;
         _animator.SetBool("syagami", false);
-        _animator.SetBool("fallattack2", false);
     }
 
     //‰Â”\‚È‚ç‚µ‚á‚ª‚İó‘Ô‚Ö‘JˆÚ‚·‚é
@@ -83,7 +82,6 @@ public class MobStatus : MonoBehaviour
 
         _state = StateEnum.FallAttack;
         _animator.SetTrigger("fallattack");
-        _animator.SetBool("fallattack2", true);
     }
 
 }

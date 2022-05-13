@@ -122,6 +122,7 @@ public class MobStatus : MonoBehaviour
     //€–S‚µ‚½Û‚Ìˆ—
     public void OnDie()
     {
+        _animator.SetTrigger("die");
         _state = StateEnum.Die;
     }
 

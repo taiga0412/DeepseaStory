@@ -2042,6 +2042,8 @@ MonoBehaviour:
   gravity: 10
   jumpSpeed: 15
   jumpLimitTime: 1
+  damagedAnimSpeed: -10
+  damagedAnimTime: 0.1
   ground: {fileID: 95924584}
   head: {fileID: 907792084}
   dashCurve:
@@ -2105,8 +2107,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2271c61bd3e6b26498728cf1bd52d124, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _HPMax: 3
-  DamagedTime: 1
+  _HPMax: 5
+  FrozenTime: 0.65
+  DamagedMutekiTime: 0.5
 --- !u!114 &1612217895
 MonoBehaviour:
   m_ObjectHideFlags: 0

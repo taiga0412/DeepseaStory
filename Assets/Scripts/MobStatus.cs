@@ -38,10 +38,16 @@ public class MobStatus : MonoBehaviour
     [SerializeField] private float _HPMax = 1.0f;
     public float HPMax => _HPMax;   //HPの最大値
     public float HP { get; private set; }   //現在のHP
-    [SerializeField] private float DamagedTime; //被弾直後の無敵時間
+    [SerializeField] private float FrozenTime;  //被弾後の硬直時間
+    [SerializeField] private float DamagedMutekiTime;   //被弾から復帰した後の無敵時間
+    public bool IsMuteki { get; private set; }  //無敵かどうかのフラグ
 
+
+
+    private const float FlickDuration = 0.2f;   //点滅間隔
 
     private StateEnum _state;   //現在の状態
+    private SpriteRenderer _spriteRenderer;
     protected Animator _animator;
 
 
@@ -51,6 +57,7 @@ public class MobStatus : MonoBehaviour
     {
         _state = StateEnum.Normal;
         _animator = GetComponent<Animator>();
+        _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
 
         HP = HPMax;
     }
@@ -99,13 +106,15 @@ public class MobStatus : MonoBehaviour
 
         _state = StateEnum.Damaged;
         _animator.SetBool("damage", true);
+        IsMuteki = true;
+        StartCoroutine(Flicker());
         StartCoroutine(EndDamagedTime());
     }
 
     //ダメージを受ける処理
     public void Damage(float n = 1)
     {
-        if (_state == StateEnum.Die || _state == StateEnum.Damaged) return;
+        if (_state == StateEnum.Die || IsMuteki) return;
 
         //HPを減らす
         HP -= n;
@@ -131,10 +140,37 @@ public class MobStatus : MonoBehaviour
     //ダメージ硬直の終了
     public IEnumerator EndDamagedTime()
     {
-        //無敵時間分待機する
-        yield return new WaitForSeconds(DamagedTime);
+        //硬直時間分待機する
+        yield return new WaitForSeconds(FrozenTime);
         //可能なら通常状態に遷移する
         _animator.SetBool("damage", false);
         GoToNormalStateIfPossible();
+        //さらに無敵時間分待機する
+        yield return new WaitForSeconds(DamagedMutekiTime);
+        //無敵時間を終わらせる
+        IsMuteki = false;
+    }
+
+    //無敵時間中はスプライトを点滅させる
+    private IEnumerator Flicker()
+    {
+        //基本色
+        Color baseColor = new Color(255, 255, 255, 255);
+        while (true)
+        {
+            //透明度を計算する
+            float alpha_Sin = Mathf.Round(Time.time % FlickDuration / FlickDuration);
+            //透明度を設定する
+            baseColor.a = alpha_Sin;
+            _spriteRenderer.color = baseColor;
+
+            if (!IsMuteki)
+            {
+                baseColor.a = 255;
+                _spriteRenderer.color = baseColor;
+                yield break;
+            }
+            yield return null;
+        }
     }
 }

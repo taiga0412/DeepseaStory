@@ -13,6 +13,7 @@ public class MobStatus : MonoBehaviour
         Attack,     //通常攻撃中
         FallAttack, //落下攻撃中
         Syagami,    //しゃがみ状態
+        Damaged,    //被弾状態（無敵）
         Die         //死亡
     }
 
@@ -32,7 +33,10 @@ public class MobStatus : MonoBehaviour
     public bool IsAttacking => _state == StateEnum.Attack || _state == StateEnum.FallAttack;
 
 
-    //TODO：HP管理の追加
+    [SerializeField] private float _HPMax = 1.0f;
+    public float HPMax => _HPMax;   //HPの最大値
+    public float HP { get; private set; }   //現在のHP
+    [SerializeField] private float DamagedTime; //被弾直後の無敵時間
 
 
     private StateEnum _state;   //現在の状態
@@ -45,7 +49,8 @@ public class MobStatus : MonoBehaviour
     {
         _state = StateEnum.Normal;
         _animator = GetComponent<Animator>();
-        
+
+        HP = HPMax;
     }
 
     //可能なら通常状態へ遷移する
@@ -84,4 +89,41 @@ public class MobStatus : MonoBehaviour
         _animator.SetTrigger("fallattack");
     }
 
+    //ダメージを受ける処理
+    public void Damage(float n = 1)
+    {
+        if (_state == StateEnum.Die) return;
+
+        //HPを減らす
+        HP -= n;
+
+        //死亡判定
+        if (HP > 0)
+        {
+            //生存しているなら、ダメージモーションへ遷移して戻る
+            _animator.SetBool("damage", true);  //ダメージアニメーションの開始
+            _state = StateEnum.Damaged; //被弾状態へ遷移
+            StartCoroutine(EndDamagedTime());   //ダメージ終了処理の予約
+            return;
+        }
+        //死亡しているときの処理
+        _state = StateEnum.Die;
+        OnDie();
+    }
+
+    //死亡した際の処理
+    public void OnDie()
+    {
+
+    }
+
+    //ダメージ硬直の終了
+    public IEnumerator EndDamagedTime()
+    {
+        //無敵時間分待機する
+        yield return new WaitForSeconds(DamagedTime);
+        //可能なら通常状態に遷移する
+        _animator.SetBool("damage", false);
+        GoToNormalStateIfPossible();
+    }
 }

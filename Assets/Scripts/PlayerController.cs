@@ -54,6 +54,12 @@ public class PlayerController : MonoBehaviour
         bool isGround = ground.IsGround();
         bool isHead = head.IsGround();
 
+        //デバッグ用。ボタンを押すとダメージを受ける
+        if (Input.GetKeyDown(KeyCode.Z))
+        {
+            _status.Damage();
+        }
+
         //攻撃処理
         if (Input.GetKeyDown(KeyCode.C))
         {

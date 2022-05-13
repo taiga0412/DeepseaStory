@@ -89,6 +89,17 @@ public class MobStatus : MonoBehaviour
         _animator.SetTrigger("fallattack");
     }
 
+
+    //可能なら被弾状態へ遷移する
+    public void GoToDamagedStateIfPossible()
+    {
+        if (_state == StateEnum.Die) return;
+
+        _state = StateEnum.Damaged;
+        _animator.SetBool("damage", true);
+        StartCoroutine(EndDamagedTime());
+    }
+
     //ダメージを受ける処理
     public void Damage(float n = 1)
     {
@@ -97,24 +108,21 @@ public class MobStatus : MonoBehaviour
         //HPを減らす
         HP -= n;
 
-        //死亡判定
+        //生存判定
         if (HP > 0)
         {
-            //生存しているなら、ダメージモーションへ遷移して戻る
-            _animator.SetBool("damage", true);  //ダメージアニメーションの開始
-            _state = StateEnum.Damaged; //被弾状態へ遷移
-            StartCoroutine(EndDamagedTime());   //ダメージ終了処理の予約
+            //被弾状態へ遷移する
+            GoToDamagedStateIfPossible();
             return;
         }
         //死亡しているときの処理
-        _state = StateEnum.Die;
         OnDie();
     }
 
     //死亡した際の処理
     public void OnDie()
     {
-
+        _state = StateEnum.Die;
     }
 
     //ダメージ硬直の終了

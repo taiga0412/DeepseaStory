@@ -65,11 +65,6 @@ public class PlayerController : MonoBehaviour
             //—Ž‰ºUŒ‚ˆ—‚Ö
             _attack.FallAttackIfPossible();
         }
-        else if (_status.IsAttacking && animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f)
-        {
-            //UŒ‚I—¹Žž‚Ìˆ—‚ÌŒÄ‚Ño‚µ
-            _attack.AttackFinished();
-        }
 
         //XŽ²‘¬“x‚Ìˆ—
         if (_status.IsMovable)
@@ -145,8 +140,8 @@ public class PlayerController : MonoBehaviour
     private void SetAnimatorParams(Vector2 velocity, bool isGround)
     {
         //Ú’n‚Æ‘¬“xî•ñ‚ðAnimator‚É“`‚¦‚é
-        animator.SetBool("run", velocity.x > 0.1f || velocity.x < -0.1f);
-        animator.SetBool("jump", velocity.y > 0.1f);
+        animator.SetFloat("xVelocity", velocity.x);
+        animator.SetFloat("yVelocity", velocity.y);
         animator.SetBool("ground", isGround);
     }
 

@@ -32,6 +32,8 @@ public class MobStatus : MonoBehaviour
     //UŒ‚’†‚©‚ğ•Ô‚·
     public bool IsAttacking => _state == StateEnum.Attack || _state == StateEnum.FallAttack;
 
+    //”í’ed’¼’†‚©‚ğ•Ô‚·
+    public bool IsDamaged => _state == StateEnum.Damaged;
 
     [SerializeField] private float _HPMax = 1.0f;
     public float HPMax => _HPMax;   //HP‚ÌÅ‘å’l
@@ -103,7 +105,7 @@ public class MobStatus : MonoBehaviour
     //ƒ_ƒ[ƒW‚ğó‚¯‚éˆ—
     public void Damage(float n = 1)
     {
-        if (_state == StateEnum.Die) return;
+        if (_state == StateEnum.Die || _state == StateEnum.Damaged) return;
 
         //HP‚ğŒ¸‚ç‚·
         HP -= n;

@@ -20,17 +20,11 @@ public class MobStatus : MonoBehaviour
     //ˆÚ“®‰Â”\‚©‚ğ•Ô‚·
     public bool IsMovable => _state == StateEnum.Normal;
 
-    //‚µ‚á‚ª‚İ‰Â”\‚©‚ğ•Ô‚·
-    public bool IsSyagamiable => _state == StateEnum.Normal;
-
     //‚µ‚á‚ª‚İ’†‚©‚ğ•Ô‚·
     public bool IsSyagaming => _state == StateEnum.Syagami;
 
     //UŒ‚‰Â”\‚©‚ğ•Ô‚·
     public bool IsAttackable => _state == StateEnum.Normal;
-
-    //UŒ‚’†‚©‚ğ•Ô‚·
-    public bool IsAttacking => _state == StateEnum.Attack || _state == StateEnum.FallAttack;
 
     //”í’ed’¼’†‚©‚ğ•Ô‚·
     public bool IsDamaged => _state == StateEnum.Damaged;
@@ -44,7 +38,7 @@ public class MobStatus : MonoBehaviour
 
 
 
-    private const float FlickDuration = 0.2f;   //“_–ÅŠÔŠu
+    private const float FlickDuration = 0.1f;   //“_–ÅŠÔŠu
 
     private StateEnum _state;   //Œ»İ‚Ìó‘Ô
     private SpriteRenderer _spriteRenderer;
@@ -67,14 +61,14 @@ public class MobStatus : MonoBehaviour
     {
         if (_state == StateEnum.Die) return;
 
+        if (_state == StateEnum.Syagami) _animator.SetBool("syagami", false);
         _state = StateEnum.Normal;
-        _animator.SetBool("syagami", false);
     }
 
     //‰Â”\‚È‚ç‚µ‚á‚ª‚İó‘Ô‚Ö‘JˆÚ‚·‚é
     public void GoToSyagamiStateIfPossible()
     {
-        if (!IsSyagamiable) return;
+        if (!IsMovable) return;
 
         _state = StateEnum.Syagami;
         _animator.SetBool("syagami", true);
@@ -156,10 +150,11 @@ public class MobStatus : MonoBehaviour
     {
         //Šî–{F
         Color baseColor = new Color(255, 255, 255, 255);
+        float alpha_Sin = 255;
         while (true)
         {
             //“§–¾“x‚ğŒvZ‚·‚é
-            float alpha_Sin = Mathf.Round(Time.time % FlickDuration / FlickDuration);
+            alpha_Sin = 255 - alpha_Sin;
             //“§–¾“x‚ğİ’è‚·‚é
             baseColor.a = alpha_Sin;
             _spriteRenderer.color = baseColor;
@@ -170,7 +165,7 @@ public class MobStatus : MonoBehaviour
                 _spriteRenderer.color = baseColor;
                 yield break;
             }
-            yield return null;
+            yield return new WaitForSeconds(FlickDuration);
         }
     }
 }

@@ -38,7 +38,7 @@ public class MobStatus : MonoBehaviour
 
 
 
-    private const float FlickDuration = 0.2f;   //点滅間隔
+    private const float FlickDuration = 0.1f;   //点滅間隔
 
     private StateEnum _state;   //現在の状態
     private SpriteRenderer _spriteRenderer;
@@ -150,10 +150,11 @@ public class MobStatus : MonoBehaviour
     {
         //基本色
         Color baseColor = new Color(255, 255, 255, 255);
+        float alpha_Sin = 255;
         while (true)
         {
             //透明度を計算する
-            float alpha_Sin = Mathf.Round(Time.time % FlickDuration / FlickDuration);
+            alpha_Sin = 255 - alpha_Sin;
             //透明度を設定する
             baseColor.a = alpha_Sin;
             _spriteRenderer.color = baseColor;
@@ -164,7 +165,7 @@ public class MobStatus : MonoBehaviour
                 _spriteRenderer.color = baseColor;
                 yield break;
             }
-            yield return null;
+            yield return new WaitForSeconds(FlickDuration);
         }
     }
 }

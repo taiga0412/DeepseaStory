@@ -233,4 +233,13 @@ public class PlayerController : MonoBehaviour
 
         return ySpeed;
     }
+
+    //Šù’è‚Ì‘¬“x‚É‚µ‚æ‚¤‚Æ‚·‚é—Í‚ðŒvŽZ‚·‚é
+    public float CalcForce(float nowVelocity, float limitVelocity, float maxForce, float minForce, float alpha)
+    {
+        float force = alpha * (limitVelocity - nowVelocity);
+        if (force > maxForce) force = maxForce;
+        else if (force < minForce) force = minForce;
+        return force;
+    }
 }

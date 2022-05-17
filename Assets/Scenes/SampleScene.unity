@@ -1355,6 +1355,7 @@ GameObject:
   m_Component:
   - component: {fileID: 477594308}
   - component: {fileID: 477594309}
+  - component: {fileID: 477594310}
   m_Layer: 0
   m_Name: attackrange
   m_TagString: Untagged
@@ -1402,6 +1403,24 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.5120673, y: 0.41719103}
   m_EdgeRadius: 0
+--- !u!114 &477594310
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 477594307}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4538344f69460004cada4e90d2666150, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  onTriggerEnter:
+    m_PersistentCalls:
+      m_Calls: []
+  onTriggerStay:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
